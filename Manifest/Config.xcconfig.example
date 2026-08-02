@@ -1,0 +1,9 @@
+// Copy to Config.xcconfig (gitignored) and fill in the real values.
+// Must match the secret you set with: cd worker && npx wrangler secret put APP_SHARED_SECRET
+MANIFEST_SHARED_SECRET = replace-with-your-shared-secret
+
+// From the RevenueCat dashboard (Project Settings > API Keys > Apple App Store).
+REVENUECAT_API_KEY = replace-with-your-revenuecat-public-sdk-key
+
+// From the PostHog dashboard (Project Settings > Project API Key).
+POSTHOG_API_KEY = replace-with-your-posthog-project-api-key

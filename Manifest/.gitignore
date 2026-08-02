@@ -1,0 +1,8 @@
+.DS_Store
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# Local-only secrets, never committed — see Config.xcconfig.example
+Config.xcconfig

@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "manifest-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-30",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    // Comma-separated priority order. First entry with a configured API key
+    // wins; the rest are fallbacks if the primary call fails.
+    "AI_PROVIDER": "openai,gemini",
+    // Remote kill switch for client-side analytics (see /v1/config) — flip to
+    // "false" and redeploy to disable PostHog for every install within
+    // roughly one app foreground, no App Store review needed.
+    "ANALYTICS_ENABLED": "true"
+  }
+  // Secrets (never committed): GEMINI_API_KEY, OPENAI_API_KEY, APP_SHARED_SECRET
+  // Set locally in .dev.vars, in production via `wrangler secret put <NAME>`.
+}
