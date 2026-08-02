@@ -67,6 +67,7 @@ struct EditGoalSheet: View {
                     goal.category = category
                     goal.customCategoryLabel = category == .custom
                         ? customCategoryLabel.trimmingCharacters(in: .whitespacesAndNewlines) : nil
+                    Analytics.track("goal_edited")
                     dismiss()
                 }
             }
@@ -76,7 +77,10 @@ struct EditGoalSheet: View {
             .onTapGesture { isTextFocused = false }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") {
+                        Analytics.track("goal_edit_cancelled")
+                        dismiss()
+                    }
                 }
             }
             .confirmationDialog(

@@ -46,6 +46,7 @@ struct PaywallView: View {
                     RoadMarkGlyph(size: 44)
                     Spacer()
                     Button {
+                        Analytics.track("paywall_closed", ["source": source])
                         onDismiss()
                     } label: {
                         Image(systemName: "xmark")
@@ -111,7 +112,10 @@ struct PaywallView: View {
                 Text(message)
                     .font(.manrope(14))
                     .foregroundStyle(.white.opacity(0.7))
-                Button("Continue without subscribing (dev)") { onDismiss() }
+                Button("Continue without subscribing (dev)") {
+                    Analytics.track("paywall_dev_bypass_used", ["source": source])
+                    onDismiss()
+                }
                     .font(.manrope(14, weight: .semibold))
                     .foregroundStyle(.accent300)
             }

@@ -55,7 +55,10 @@ struct AddGoalSheet: View {
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") {
+                        Analytics.track("goal_create_cancelled")
+                        dismiss()
+                    }
                 }
             }
         }
