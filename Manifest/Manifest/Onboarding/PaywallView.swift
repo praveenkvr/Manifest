@@ -35,6 +35,11 @@ struct PaywallView: View {
     @State private var selected: Package?
     @State private var isPurchasing = false
 
+    // App Store review requires subscription paywalls to link to real Terms
+    // of Use and Privacy Policy pages — swap these once they're live.
+    static let termsURL = URL(string: "https://www.akizitech.com/manifest/terms")!
+    static let privacyURL = URL(string: "https://www.akizitech.com/manifest/privacy")!
+
     var body: some View {
         ZStack {
             LinearGradient.themeDarkBackground.ignoresSafeArea()
@@ -85,8 +90,8 @@ struct PaywallView: View {
 
                 HStack(spacing: 24) {
                     Button("Restore") { restore() }
-                    Text("Terms")
-                    Text("Privacy")
+                    Link("Terms", destination: Self.termsURL)
+                    Link("Privacy", destination: Self.privacyURL)
                 }
                 .font(.manrope(13))
                 .foregroundStyle(.white.opacity(0.6))
@@ -112,12 +117,17 @@ struct PaywallView: View {
                 Text(message)
                     .font(.manrope(14))
                     .foregroundStyle(.white.opacity(0.7))
+                // #if DEBUG: this bypass must never reach a Release/App Store
+                // build — it would let anyone skip paying whenever offerings
+                // fail to load (misconfiguration, network hiccup, etc).
+                #if DEBUG
                 Button("Continue without subscribing (dev)") {
                     Analytics.track("paywall_dev_bypass_used", ["source": source])
                     onDismiss()
                 }
                     .font(.manrope(14, weight: .semibold))
                     .foregroundStyle(.accent300)
+                #endif
             }
             .padding(16)
             .background(Color.white.opacity(0.06))

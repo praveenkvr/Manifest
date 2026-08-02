@@ -7,12 +7,21 @@
 
 import SwiftUI
 import FamilyControls
+import StoreKit
 
 struct SignOffView: View {
     var settings: AppSettings
     var onDone: () -> Void
 
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.requestReview) private var requestReview
+
+    // StoreKit never tells us whether the prompt was actually shown or a
+    // review left — it silently throttles to ~3 real prompts/year on its
+    // own. We just call it at good moments and trust that throttle; there's
+    // no "ask again if they haven't reviewed" we can implement, since the
+    // API intentionally hides review status from apps.
+    private static let reviewPromptMilestones: Set<Int> = [2, 10]
 
     private var streak: Int { RitualLog.currentStreak(in: modelContext) }
 
@@ -82,6 +91,11 @@ struct SignOffView: View {
                     .padding(.bottom, 12)
             }
             .padding(.horizontal, 24)
+        }
+        .task {
+            if Self.reviewPromptMilestones.contains(RitualLog.totalCompletedCount(in: modelContext)) {
+                requestReview()
+            }
         }
     }
 }
