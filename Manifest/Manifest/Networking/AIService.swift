@@ -28,7 +28,8 @@ enum AIService {
         goal: String,
         style: ManifestationStyle,
         language: String,
-        dayNumber: Int
+        dayNumber: Int,
+        recentLines: [String] = []
     ) async throws -> [String] {
         if onDeviceEnabled && OnDeviceGenerator.isAvailable {
             do {
@@ -37,6 +38,6 @@ enum AIService {
                 print("[AIService] On-device dailyScript failed, falling back to Worker: \(error)")
             }
         }
-        return try await WorkerClient.dailyScript(goal: goal, style: style, language: language, dayNumber: dayNumber)
+        return try await WorkerClient.dailyScript(goal: goal, style: style, language: language, dayNumber: dayNumber, recentLines: recentLines)
     }
 }

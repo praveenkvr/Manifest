@@ -132,18 +132,29 @@ app.post("/v1/daily-script", async (c) => {
     style?: string;
     language?: string;
     dayNumber?: number;
+    recentLines?: string[];
   }>();
   const goal = body.goal?.trim();
   if (!goal) return c.json({ error: "goal is required" }, 400);
 
   const style = parseStyle(body.style);
-  const lineCount = style === "369" ? 1 : 3; // 369 is one line, handwritten repeatedly — not a multi-line script.
+  const lineCount = style === "369" ? 1 : 4; // 369 is one line, handwritten repeatedly — not a multi-line script.
+  // Bounded so a client can't inflate every request's input tokens — a
+  // couple of recent days' worth of lines is plenty for the model to steer
+  // away from without cost creeping up over time.
+  const recentLines = (Array.isArray(body.recentLines) ? body.recentLines : [])
+    .filter((l): l is string => typeof l === "string")
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .slice(-8)
+    .map((l) => l.slice(0, 200));
   const { system, prompt } = buildDailyScriptPrompt({
     goal,
     style,
     language: body.language?.trim() || "en",
     dayNumber: Number.isFinite(body.dayNumber) ? Number(body.dayNumber) : 1,
     lineCount,
+    recentLines,
   });
 
   try {

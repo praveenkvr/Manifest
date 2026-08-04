@@ -7,7 +7,10 @@ interface GeminiResponse {
 export function createGeminiProvider(apiKey: string, model = "gemini-2.5-flash"): AIProvider {
   return {
     name: "gemini",
-    async generate({ system, prompt, maxTokens = 300, temperature = 0.9 }: GenerateOptions) {
+    // Bumped from 0.9 — the primary OpenAI provider ignores temperature
+    // entirely (reasoning-tier model), so this is the only knob that adds
+    // randomness on top of the recent-lines instruction in the prompt.
+    async generate({ system, prompt, maxTokens = 300, temperature = 1.15 }: GenerateOptions) {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
       const res = await fetch(url, {
         method: "POST",

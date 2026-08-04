@@ -62,13 +62,15 @@ enum WorkerClient {
         goal: String,
         style: ManifestationStyle,
         language: String,
-        dayNumber: Int
+        dayNumber: Int,
+        recentLines: [String] = []
     ) async throws -> [String] {
         let json = try await send(path: "v1/daily-script", body: [
             "goal": goal,
             "style": style.rawValue,
             "language": language,
             "dayNumber": dayNumber,
+            "recentLines": recentLines,
         ])
         guard let lines = json["lines"] as? [String] else { throw WorkerClientError.invalidResponse }
         return lines

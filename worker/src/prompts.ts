@@ -122,8 +122,9 @@ export function buildDailyScriptPrompt(params: {
   language: string;
   dayNumber: number;
   lineCount?: number;
+  recentLines?: string[];
 }): { system: string; prompt: string } {
-  const { goal, style, language, dayNumber, lineCount = 3 } = params;
+  const { goal, style, language, dayNumber, lineCount = 3, recentLines = [] } = params;
   return {
     system: SYSTEM_DAILY_SCRIPT,
     prompt: [
@@ -135,6 +136,14 @@ export function buildDailyScriptPrompt(params: {
         "repeated — but every line, without exception, stays in the already-true present tense " +
         "described above. Variety comes from what you describe, never from drifting into hope, " +
         "plans, or future tense.",
+      ...(recentLines.length > 0
+        ? [
+            "These lines were already used on recent days — do not reuse them, and avoid lines " +
+              "that are close paraphrases of them (same imagery, same sentence shape, same specific " +
+              "detail). Find a genuinely different angle on the goal instead:\n" +
+              recentLines.map((l) => `- "${l}"`).join("\n"),
+          ]
+        : []),
       `Return plain text only: exactly ${lineCount} lines, one per line, no numbering, no quotes.`,
     ].join("\n"),
   };

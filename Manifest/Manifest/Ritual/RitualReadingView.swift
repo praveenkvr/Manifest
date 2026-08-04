@@ -217,9 +217,19 @@ struct RitualReadingView: View {
             return
         }
 
+        // Recent days' lines for this goal, so the model has something concrete
+        // to steer away from instead of just a generic "vary it" instruction.
+        var recentDescriptor = FetchDescriptor<DailyScript>(
+            predicate: #Predicate { $0.goalID == goalID && $0.date < startOfDay },
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+        recentDescriptor.fetchLimit = 3
+        let recentLines = ((try? modelContext.fetch(recentDescriptor)) ?? []).flatMap { $0.lines }
+
         do {
             let fetched = try await AIService.dailyScript(
-                goal: goal.text, style: goal.style, language: settings.language, dayNumber: goal.dayNumber
+                goal: goal.text, style: goal.style, language: settings.language, dayNumber: goal.dayNumber,
+                recentLines: recentLines
             )
             lines = fetched
             modelContext.insert(DailyScript(goalID: goal.id, date: startOfDay, style: goal.style, language: settings.language, lines: fetched))
